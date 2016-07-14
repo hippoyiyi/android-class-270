@@ -43,7 +43,8 @@
         android:layout_alignParentStart="true"
         android:orientation="horizontal"
         android:id="@+id/radioGroup"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:visibility="gone">
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -77,5 +78,15 @@
         android:id="@+id/spinner"
         android:layout_below="@+id/radioGroup"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Menu"
+        android:id="@+id/menuButton"
+        android:layout_above="@+id/listView"
+        android:layout_toRightOf="@+id/button"
+        android:layout_toEndOf="@+id/button"
+        android:onClick="goToMenu" />
 
 </RelativeLayout>
