@@ -30,7 +30,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
 
 
     List<Drink> drinks = new ArrayList<>();
-    List<Drink> orders = new ArrayList<>();
+    List<DrinkOrder> orders = new ArrayList<>();
 
 
 
@@ -79,11 +79,13 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
     }
     public void showDrinkOrderDialog(Drink drink)
     {
+        DrinkOrder drinkOrder= new DrinkOrder(drink);
+
         FragmentManager fragmentmanager = getFragmentManager();
 
         FragmentTransaction ft = fragmentmanager.beginTransaction();
 
-        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance("", "");
+        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance(drinkOrder);
         Fragment prev = getFragmentManager().findFragmentByTag("DrinkOrderDialog");
         if(prev != null)
         {
@@ -97,9 +99,9 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
 public void updateTotal()
 {
     int total =0;
-    for(Drink drink: orders)
+    for(DrinkOrder order: orders)
     {
-        total += drink.mPrice;
+        total += order.mNumber * order.drink.mPrice + order.lNumber * order.drink.lPrice;
 
     }
     totalTextView.setText(String.valueOf(total));
@@ -109,11 +111,10 @@ public void done(View view)
 {
     Intent intent = new Intent();
     JSONArray jsonArray = new JSONArray();
-    for(Drink drink:orders)
+    for(DrinkOrder order:orders)
     {
-        JSONObject jsonObject = drink.getJsonObject();
-        jsonArray.put(jsonObject);
-
+        String data= order.toData();
+        jsonArray.put(data);
     }
     intent.putExtra("result", jsonArray.toString());
     setResult(RESULT_OK,intent);
@@ -151,8 +152,23 @@ public void done(View view)
     }
 
     @Override
-    public void onDrinkOrderFinished() {
+    public void onDrinkOrderFinished(DrinkOrder drinkOrder) {
+        Boolean flag = false;
 
+        for(int index =0;index < orders.size();index++)
+        {
+            if(orders.get(index).drink.name.equals(drinkOrder.drink.name))
+            {
+                orders.set(index,drinkOrder);
+                flag =true;
+                break;
+            }
+
+        }
+        if(!flag)
+            orders.add(drinkOrder);
+
+        updateTotal();
     }
 
 
