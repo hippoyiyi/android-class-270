@@ -1,5 +1,8 @@
 package com.example.user.simpleui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrinkMenuActivity extends AppCompatActivity {
+public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDialog.OnDrinkOrderListener {
 
 
     TextView totalTextView;
@@ -67,17 +70,34 @@ public class DrinkMenuActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DrinkAdapter drinkAdapter = (DrinkAdapter) parent.getAdapter();
                 Drink drink =(Drink) drinkAdapter.getItem(position);
-                orders.add(drink);
-                updateTotal();
+                //orders.add(drink);
+                //updateTotal();
+                showDrinkOrderDialog(drink);
 
             }
         });
     }
+    public void showDrinkOrderDialog(Drink drink)
+    {
+        FragmentManager fragmentmanager = getFragmentManager();
 
+        FragmentTransaction ft = fragmentmanager.beginTransaction();
+
+        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance("", "");
+        Fragment prev = getFragmentManager().findFragmentByTag("DrinkOrderDialog");
+        if(prev != null)
+        {
+            ft.remove(prev);
+        }
+        //ft.replace(R.id.root, dialog);
+        ft.addToBackStack(null);
+        dialog.show(ft, "DrinkOrderDialog");
+        //ft.commit();
+    }
 public void updateTotal()
 {
     int total =0;
-    for(Drink drink: orders )
+    for(Drink drink: orders)
     {
         total += drink.mPrice;
 
@@ -129,4 +149,11 @@ public void done(View view)
         super.onRestart();
         Log.d("debug", "DrinkMenuActivity OnRestart");
     }
+
+    @Override
+    public void onDrinkOrderFinished() {
+
+    }
+
+
 }
