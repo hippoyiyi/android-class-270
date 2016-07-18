@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     String selectedTea = "black tea";
 
+    String menuResults ="";
+
     List<Order> orders = new ArrayList<>();
 
 
@@ -88,13 +90,15 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(text);
         Order order = new Order();
         order.note = text;
-        order.drinkName = selectedTea;
+        order.menuResults = menuResults;
         order.storeInfo = (String)spinner.getSelectedItem();
         orders.add(order);
 
         setupListView();
 
         editText.setText("");
+        //add
+        menuResults = "";
     }
 public void goToMenu(View view)
 {
@@ -112,7 +116,9 @@ public void goToMenu(View view)
             if(resultCode == RESULT_OK)
             {
                 Toast.makeText(this, "完成菜單",Toast.LENGTH_SHORT).show();
-                textView.setText(data.getStringExtra("result"));
+                //
+                // textView.setText(data.getStringExtra("result"));
+                menuResults =(data.getStringExtra("results"));
             }
         }
     }
