@@ -18,7 +18,7 @@ public class Order {
         try {
             jsonObject.put("note",note);
             jsonObject.put("menuResults",menuResults);
-            jsonObject.put("storeIbnfo",storeInfo);
+            jsonObject.put("storeInfo",storeInfo);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,9 +54,9 @@ public static Order newInstanceWithData(String data)
                 String data = jsonArray.getString(i);
                 DrinkOrder drinkOrder = DrinkOrder.newInstanceWithData(data);
                 totalNumber += drinkOrder.lNumber + drinkOrder.mNumber;
-                return totalNumber;
-            }
 
+            }
+            return totalNumber;
         } catch (JSONException e) {
             e.printStackTrace();
         }

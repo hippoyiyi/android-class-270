@@ -141,7 +141,7 @@ public void goToMenu(View view)
                 Toast.makeText(this, "完成菜單",Toast.LENGTH_SHORT).show();
                 //
                 // textView.setText(data.getStringExtra("result"));
-                menuResults =(data.getStringExtra("results"));
+                menuResults =(data.getStringExtra("result"));
             }
         }
     }
