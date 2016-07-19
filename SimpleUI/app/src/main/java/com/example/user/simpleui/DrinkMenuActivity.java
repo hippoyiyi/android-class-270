@@ -52,9 +52,9 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
         for(int i=0; i<names.length; i++)
         {
             Drink drink  = new Drink();
-            drink.name = names[i];
-            drink.mPrice = mPrice[i];
-            drink.lPrice = lPrice[i];
+            drink.setName(names[i]);
+            drink.setmPrice(mPrice[i]);
+            drink.setlPrice(lPrice[i]);
             drink.imageId = imageId[i];
             drinks.add(drink);
 
@@ -82,7 +82,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
         DrinkOrder drinkOrder= new DrinkOrder(drink);
         for(DrinkOrder order: orders)
         {
-            if(order.drink.name.equals(drink.name))
+            if(order.drink.getName().equals(drink.getName()))
             {
                 drinkOrder = order;
             }
@@ -112,7 +112,7 @@ public void updateTotal()
     int total =0;
     for(DrinkOrder order: orders)
     {
-        total += order.mNumber * order.drink.mPrice + order.lNumber * order.drink.lPrice;
+        total += order.mNumber * order.drink.getmPrice() + order.lNumber * order.drink.getlPrice();
 
     }
     totalTextView.setText(String.valueOf(total));
@@ -168,7 +168,7 @@ public void done(View view)
 
         for(int index =0;index < orders.size();index++)
         {
-            if(orders.get(index).drink.name.equals(drinkOrder.drink.name))
+            if(orders.get(index).drink.getName().equals(drinkOrder.drink.getName()))
             {
                 orders.set(index,drinkOrder);
                 flag =true;
