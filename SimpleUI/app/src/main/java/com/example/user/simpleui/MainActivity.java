@@ -16,8 +16,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 String text = editText.getText().toString();
-                editor.putString("editText",text);
+                editor.putString("editText", text);
                 editor.commit();
 
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -70,13 +72,13 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-       radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
+       radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
            @Override
            public void onCheckedChanged(RadioGroup group, int checkedId) {
                RadioButton radioButton = (RadioButton) radioGroup.findViewById(checkedId);
                selectedTea = radioButton.getText().toString();
            }
-        });
+       });
 
      String history = Utils.readFile(this, "history");
      String[] datas = history.split("\n");
@@ -89,18 +91,33 @@ public class MainActivity extends AppCompatActivity {
 
      setupListView();
      setupSpinner();
-
+/*
         ParseObject parseObject = new ParseObject("Test");
         parseObject.put("foo","spr");
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e ==null)
-                Toast.makeText(MainActivity.this,"上傳成功",Toast.LENGTH_LONG);
+                if (e == null)
+                    Toast.makeText(MainActivity.this, "上傳成功", Toast.LENGTH_LONG);
+            }
+        });
+        //
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Test");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(e == null)
+                {
+                    for(ParseObject object : objects)
+                    {
+                        Toast.makeText(MainActivity.this, object.getString("foo"), Toast.LENGTH_LONG).show();
+                    }
+                }
+                    //Toast.makeText(MainActivity.this,"下載成功",Toast.LENGTH_LONG);
             }
         });
 
-
+*/
         Log.d("debug", "MainActivity On Create");
     }
 
@@ -126,9 +143,10 @@ public class MainActivity extends AppCompatActivity {
         //text = text + "   性別:" + selectedSex;
         textView.setText(text);
         Order order = new Order();
-        order.note = text;
-        order.menuResults = menuResults;
-        order.storeInfo = (String)spinner.getSelectedItem();
+        order.setNote(text);
+        order.setMenuResults(menuResults);
+        order.setStoreInfo((String) spinner.getSelectedItem());
+        order.saveInBackground();
         orders.add(order);
 
         //

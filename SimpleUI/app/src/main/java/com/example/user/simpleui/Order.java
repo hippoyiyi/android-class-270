@@ -1,5 +1,8 @@
 package com.example.user.simpleui;
 
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,18 +10,60 @@ import org.json.JSONObject;
 /**
  * Created by user on 2016/7/13.
  */
-public class Order {
-    String note;
+@ParseClassName("Order")
+public class Order extends ParseObject {
+    //private String note;
     //String drinkName;
-    String menuResults;
-    String storeInfo;
+    //private String menuResults;
+    //private String storeInfo;
+
+
+
+    public String getNote(){
+     String note = getString("note");
+        if(note == null){
+            return "";
+        }
+     return note;
+
+    }
+
+    public void setNote(String note) {
+        put("note",note);
+    }
+    public String getMenuResults() {
+
+        String menuResults = getString("menuResults");
+        if(menuResults ==null)
+        {
+            return "";
+        }
+        return menuResults;
+    }
+    public void setMenuResults(String menuResults) {
+        put("menuResults", menuResults);
+    }
+
+    public String getStoreInfo() {
+        String storeInfo =  getString("storeInfo");
+        if(storeInfo == null)
+        {
+            return "";
+        }
+        return storeInfo;
+    }
+
+    public void setStoreInfo(String storeInfo) {
+       put("storeInfo", storeInfo);
+    }
+
     public String toData()
     {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("note",note);
-            jsonObject.put("menuResults",menuResults);
-            jsonObject.put("storeInfo",storeInfo);
+            jsonObject.put("note",getNote());
+            jsonObject.put("menuResults",getMenuResults());
+            jsonObject.put("storeInfo",getStoreInfo());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -30,9 +75,9 @@ public static Order newInstanceWithData(String data)
     try {
         JSONObject jsonObject = new JSONObject(data);
         Order order = new Order();
-        order.note = jsonObject.getString("note");
-        order.menuResults = jsonObject.getString("menuResults");
-        order.storeInfo = jsonObject.getString("storeInfo");
+        order.setNote(jsonObject.getString("note"));
+        order.setMenuResults(jsonObject.getString("menuResults"));
+        order.setStoreInfo( jsonObject.getString("storeInfo"));
         return order;
 
     } catch (JSONException e) {
@@ -41,14 +86,13 @@ public static Order newInstanceWithData(String data)
   return null;
 
 }
-    public int totalNumber()
-    {
-        if(menuResults ==  null || menuResults.equals(""))
+    public int totalNumber() {
+        if(getMenuResults() ==  null || getMenuResults().equals(""))
         {
             return 0;
                     }
         try {
-            JSONArray jsonArray = new JSONArray(menuResults);
+            JSONArray jsonArray = new JSONArray(getMenuResults());
             int totalNumber = 0;
             for(int i=0; i<jsonArray.length();i++){
                 String data = jsonArray.getString(i);
