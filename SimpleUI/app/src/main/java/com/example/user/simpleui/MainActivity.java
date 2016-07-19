@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                selectedTea = radioButton.getText().toString();
            }
        });
-
+/*
      String history = Utils.readFile(this, "history");
      String[] datas = history.split("\n");
      for(String data: datas)
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
          if(order != null)
             orders.add(order);
      }
-
+*/
      setupListView();
      setupSpinner();
 /*
@@ -125,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
     {
        // String[] data = new String[]{"black tea","green tea", "1","2","3","4","5"};
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+
+        Order.getOrderFromRemote(new FindCallback<Order>() {
+            @Override
+            public void done(List<Order> objects, ParseException e) {
+                orders = objects;
+                OrderAdapter adapter = new OrderAdapter(MainActivity.this,orders);
+                listView.setAdapter(adapter);
+            }
+        });
         OrderAdapter adapter = new OrderAdapter(this, orders);
 
         listView.setAdapter(adapter);

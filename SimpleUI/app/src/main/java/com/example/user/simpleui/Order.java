@@ -1,7 +1,9 @@
 package com.example.user.simpleui;
 
+import com.parse.FindCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,7 +79,7 @@ public static Order newInstanceWithData(String data)
         Order order = new Order();
         order.setNote(jsonObject.getString("note"));
         order.setMenuResults(jsonObject.getString("menuResults"));
-        order.setStoreInfo( jsonObject.getString("storeInfo"));
+        order.setStoreInfo(jsonObject.getString("storeInfo"));
         return order;
 
     } catch (JSONException e) {
@@ -107,5 +109,12 @@ public static Order newInstanceWithData(String data)
         return 0;
 
     }
-
+     public static void getOrderFromRemote(FindCallback<Order> callback)
+     {
+        getQuery().findInBackground(callback);
+     }
+    public static ParseQuery<Order> getQuery()
+    {
+     return  ParseQuery.getQuery(Order.class);
+    }
 }
