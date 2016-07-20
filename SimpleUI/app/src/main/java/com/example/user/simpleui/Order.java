@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -112,6 +113,30 @@ public static Order newInstanceWithData(String data)
         return 0;
 
     }
+    public List<String> getMenuResultList()
+    {
+        if(getMenuResults() ==  null || getMenuResults().equals(""))
+        {
+            return null;
+        }
+        try {
+            JSONArray jsonArray = new JSONArray(getMenuResults());
+            List<String>  menuResultList = new ArrayList<>();
+            for(int i=0; i<jsonArray.length();i++){
+                String data = jsonArray.getString(i);
+                DrinkOrder drinkOrder = DrinkOrder.newInstanceWithData(data);
+                String menuResult = drinkOrder.drink.getName() + "中杯:" +
+                        String.valueOf(drinkOrder.mNumber) + "大杯:" +
+                        String.valueOf(drinkOrder.mNumber);
+                //totalNumber += drinkOrder.lNumber + drinkOrder.mNumber;
+
+            }
+            return menuResultList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
      public static void getOrderFromRemote(final FindCallback<Order> callback)
      {
         //getQuery().findInBackground(callback);
@@ -120,7 +145,7 @@ public static Order newInstanceWithData(String data)
              public void done(List<Order> objects, ParseException e) {
                  if(e == null )
                  {
-                     Order.pinAllInBackground("Order",objects);
+                     Order.pinAllInBackground("Order", objects);
                      callback.done(objects, e);
                  }
                  else

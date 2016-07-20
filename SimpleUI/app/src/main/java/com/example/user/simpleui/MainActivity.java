@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.listView);
         spinner = (Spinner)findViewById(R.id.spinner);
 
-        sharedPreferences = getSharedPreferences("setting",MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("setting", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
 
@@ -92,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
             orders.add(order);
      }
 */
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Order order = (Order)parent.getAdapter().getItem(position);
+                goToDetail(order);
+            }
+        });
      setupListView();
      setupSpinner();
 /*
@@ -185,12 +193,18 @@ public class MainActivity extends AppCompatActivity {
 
         //order.saveInBackground();
         order.pinInBackground("Order");
-        order.saveEventually();
+        //order.saveEventually();
+        order.saveEventually(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                setupListView();
+            }
+        });
         orders.add(order);
 
         //
-        Utils.writeFile(this, "history",order.toData()+"\n");
-        setupListView();
+        Utils.writeFile(this, "history", order.toData() + "\n");
+        //setupListView();
 
         editText.setText("");
         //add.
@@ -203,7 +217,15 @@ public void goToMenu(View view)
     //startActivity(intent);
     startActivityForResult(intent, REQUEST_CODE_DRINK_MENU_ACTIVITY);
 }
-
+    public void goToDetail(Order order)
+    {
+        Intent intent = new Intent();
+        intent.setClass(this, OrderDetailActivity.class);
+        intent.putExtra("note", order.getNote());
+        intent.putExtra("storeInfo", order.getStoreInfo());
+        intent.putExtra("menuResults",order.getMenuResults());
+        startActivity(intent);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
