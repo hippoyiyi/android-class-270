@@ -113,14 +113,14 @@ public static Order newInstanceWithData(String data)
         return 0;
 
     }
-    public List<String> getMenuResultList()
+    public static  List<String> getMenuResultList(String menuResults)
     {
-        if(getMenuResults() ==  null || getMenuResults().equals(""))
+        if(menuResults ==  null || menuResults.equals(""))
         {
             return null;
         }
         try {
-            JSONArray jsonArray = new JSONArray(getMenuResults());
+            JSONArray jsonArray = new JSONArray(menuResults);
             List<String>  menuResultList = new ArrayList<>();
             for(int i=0; i<jsonArray.length();i++){
                 String data = jsonArray.getString(i);
