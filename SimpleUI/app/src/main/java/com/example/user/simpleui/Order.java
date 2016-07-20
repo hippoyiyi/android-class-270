@@ -121,6 +121,7 @@ public static Order newInstanceWithData(String data)
                  if(e == null )
                  {
                      Order.pinAllInBackground("Order",objects);
+                     callback.done(objects, e);
                  }
                  else
                  {
