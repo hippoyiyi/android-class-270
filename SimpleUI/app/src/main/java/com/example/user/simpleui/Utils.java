@@ -1,6 +1,8 @@
 package com.example.user.simpleui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +42,7 @@ public class Utils {
         try {
             FileInputStream fileInputStream = context.openFileInput(fileName);
             byte[] buffer = new byte[2048];
-            fileInputStream.read(buffer, 0 ,buffer.length);
+            fileInputStream.read(buffer, 0, buffer.length);
             fileInputStream.close();
             return new String(buffer);
         } catch (FileNotFoundException e) {
@@ -102,6 +104,20 @@ public class Utils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+    public static Bitmap getStatisticMap(double[] latlng)
+    {
+        String center = String.valueOf(latlng[0])+","+String.valueOf(latlng[1]);
+        String staticMapURL = "http://map.google.com/maps/api/staticmap?center="+center+"&size=640x480&zoom=17";
+
+        byte[] bytes = Utils.urlToBytes(staticMapURL);
+        if(bytes != null)
+        {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            return bitmap;
+        }
+
         return null;
     }
 }
