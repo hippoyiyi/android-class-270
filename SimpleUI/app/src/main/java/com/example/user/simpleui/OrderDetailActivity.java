@@ -1,9 +1,15 @@
 package com.example.user.simpleui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import com.google.android.gms.location.LocationListener;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -13,7 +19,11 @@ import android.widget.TextView;
 //import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,14 +37,20 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.logging.Handler;
 
-public class OrderDetailActivity extends AppCompatActivity implements GeoCodingTask.GeoCodingResponse {
+import static android.Manifest.*;
 
+public class OrderDetailActivity extends AppCompatActivity implements GeoCodingTask.GeoCodingResponse, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
+
+    final static int ACCESS_FINE_LOCATION_REQUEST_CODE=1;
     GoogleMap googleMap;
+    GoogleApiClient googleApiClient;
+    LocationRequest locationRequest;
+    Marker marker;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    //private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +97,7 @@ public class OrderDetailActivity extends AppCompatActivity implements GeoCodingT
             }
         }).run();*/
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     //    public static class GeoCodingTask extends AsyncTask<String, Void, Bitmap>{
@@ -122,52 +136,105 @@ public class OrderDetailActivity extends AppCompatActivity implements GeoCodingT
             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
-                    CameraUpdate cp = CameraUpdateFactory.newLatLngZoom(marker.getPosition(),21);
+                    CameraUpdate cp = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 21);
                     googleMap.moveCamera(cp);
                     return false;
                 }
             });
-            googleMap.moveCamera(cameraUpdate);
+            //googleMap.moveCamera(cameraUpdate);
+            createGoogleAPIClient();
+        }
+    }
+    private void createGoogleAPIClient()
+    {
+        if(googleApiClient == null)
+        {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            googleApiClient.connect();
+
+
+        }
+    }
+
+
+
+
+
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != getPackageManager().PERMISSION_GRANTED)
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                requestPermissions(new String[]{permission.ACCESS_FINE_LOCATION},ACCESS_FINE_LOCATION_REQUEST_CODE);
+            }
+            return;
+        }
+
+        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        LatLng start = new LatLng(25.0186348,121.5398379);
+        if(location != null)
+        {
+            start = new LatLng(location.getLatitude(),location.getLongitude());
+        }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 17));
+
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(ACCESS_FINE_LOCATION_REQUEST_CODE == requestCode)
+                    {
+                                if(permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)  && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                        {
+                                    onConnected(null);
+                    }
+        }
+    }
+
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+    private void createLocationRequest()
+    {
+        if(locationRequest == null)
+        {
+            locationRequest = new LocationRequest();
+            locationRequest.setInterval(1000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "OrderDetail Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.user.simpleui/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "OrderDetail Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.user.simpleui/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
+    public void onLocationChanged(Location location) {
+//        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
+//        if (marker == null) {
+//            MarkerOptions markerOptions = new MarkerOptions().position(currentLatLng).title("台灣大學").snippet("Hello Google Map");
+//            marker = googleMap.addMarker(markerOptions);
+//        }
+//        else
+//        {
+//            marker.setPosition(currentLatLng);
+//        }
     }
 }
